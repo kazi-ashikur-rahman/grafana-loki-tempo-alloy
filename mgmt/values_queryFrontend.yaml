@@ -1,0 +1,36 @@
+loki:
+  queryFrontend:
+    replicas: 1
+    terminationGracePeriodSeconds: 30
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 60
+
+    # Production resources:
+    # resources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   limits:
+    #     cpu: 500m
+    #     memory: 512Mi
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+
+    cache:
+      enabled: false                     # POC: false (Production: true)
+      compression: snappy

@@ -1,0 +1,59 @@
+loki:
+  ingester:
+    replicas: 1
+    terminationGracePeriodSeconds: 60
+    maxUnavailable: 1
+
+    zoneAwareReplication:
+      enabled: false
+
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+
+    # Production resources:
+    # resources:
+    #   requests:
+    #     cpu: 200m
+    #     memory: 512Mi
+    #   limits:
+    #     cpu: 1000m
+    #     memory: 2Gi
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+
+    # Production persistence:
+    # persistence:
+    #   enabled: true
+    #   storageClass: gp2
+    #   claims:
+    #     - name: data
+    #       size: 50Gi
+    #       storageClass: gp2
+    #       accessModes:
+    #         - ReadWriteOnce
+
+    persistence:
+      enabled: true
+      storageClass: local-path
+      claims:
+        - name: data
+          size: 2Gi                      # POC: 2Gi (Production: 50Gi)
+          storageClass: local-path
+          accessModes:
+            - ReadWriteOnce
+
+    podAnnotations: { }
+    podLabels: { }
+    priorityClassName: null
+
+    podDisruptionBudget:
+      enabled: false                     # POC: false (Production: true)
+      minAvailable: 1

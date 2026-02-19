@@ -1,0 +1,38 @@
+loki:
+  querier:
+    replicas: 1
+    maxUnavailable: 1
+    terminationGracePeriodSeconds: 30
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 80
+
+    persistence:
+      enabled: false
+      size: 20Gi
+      storageClass: gp2
+
+    # Production resources:
+    # resources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 256Mi
+    #   limits:
+    #     cpu: 500m
+    #     memory: 1Gi
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+
+    nodeSelector: { }
+    tolerations: [ ]
+    affinity: { }

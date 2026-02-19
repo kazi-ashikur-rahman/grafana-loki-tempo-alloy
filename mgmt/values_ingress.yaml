@@ -1,0 +1,22 @@
+loki:
+  ingress:
+    enabled: false
+  
+  # gateway:
+  #   ingress:
+  #     enabled: true
+  #     ingressClassName: alb
+  #     annotations:
+  #       alb.ingress.kubernetes.io/load-balancer-name: mgmt-cheq-loki-ing
+  #       alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:527976876550:certificate/fe95149b-196a-4e5d-aaad-807d5aa74fdf
+  #       alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+  #       alb.ingress.kubernetes.io/scheme: internal
+  #       alb.ingress.kubernetes.io/security-groups: sg-0acc8d4d31cb6730b
+  #       alb.ingress.kubernetes.io/subnets: subnet-03329be459952fa5b, subnet-0cce2e4521adedf6d, subnet-0f6b03fd392d29b10
+  #       alb.ingress.kubernetes.io/tags: Environment=mgmt
+  #       alb.ingress.kubernetes.io/target-type: instance
+  #     hosts:
+  #       - host: loki-gateway.cheq.io
+  #         paths:
+  #           - path: /
+  #             pathType: Prefix

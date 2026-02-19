@@ -1,0 +1,45 @@
+loki:
+  indexGateway:
+    replicas: 1
+    maxUnavailable: 1
+    terminationGracePeriodSeconds: 60
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 60
+
+    # Production persistence:
+    # persistence:
+    #   enabled: true
+    #   inMemory: true
+    #   size: 20Gi
+    #   storageClass: gp2
+
+    persistence:
+      enabled: true
+      size: 2Gi                          # POC: 2Gi (Production: 20Gi)
+      storageClass: local-path
+
+    # Production resources:
+    # resources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 256Mi
+    #   limits:
+    #     cpu: 500m
+    #     memory: 1Gi
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}

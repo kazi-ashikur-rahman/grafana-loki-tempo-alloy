@@ -1,0 +1,105 @@
+prometheus:
+  prometheusSpec:
+    # Enable remote write receiver for Tempo metrics generator (default: false)
+    enableRemoteWriteReceiver: true
+    # Enable exemplar storage for metrics-traces linking (default: [])
+    enableFeatures:
+      - exemplar-storage
+      - native-histograms
+
+# Disable admission webhooks to avoid image pull issues
+prometheusOperator:
+  admissionWebhooks:
+    enabled: false
+  tls:
+    enabled: false
+
+grafana:
+  # Enable anonymous access for demo (default: requires login)
+  grafana.ini:
+    auth.anonymous:
+      enabled: true
+      org_role: Admin
+    auth:
+      disable_login_form: false
+    feature_toggles:
+      enable: traceqlEditor
+
+  adminUser: admin
+  adminPassword: admin123
+
+  # Disable built-in dashboards to keep UI clean
+  defaultDashboardsEnabled: false
+
+  # Disable problematic plugin that causes crashes
+  # plugins:
+  #   - grafana-exploretraces-app:1.0.0 
+
+  # Connect Grafana to all datasources
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          uid: prometheus
+          url: http://monitoring-kube-prometheus-prometheus.observability.svc.cluster.local:9090
+          access: proxy
+
+        - name: Tempo
+          type: tempo
+          uid: tempo
+          url: http://tempo.observability.svc.cluster.local:3200
+          access: proxy
+          jsonData:
+            httpMethod: GET
+
+        - name: Loki
+          type: loki
+          uid: loki
+          url: http://loki-gateway.loki.svc.cluster.local:3100
+          access: proxy
+          jsonData:
+            derivedFields:
+              - datasourceUid: tempo
+                matcherRegex: "(?:traceID|trace_id|TraceId|traceid)[=: ]+(\\w+)"
+                name: TraceID
+                url: "$${__value.raw}"
+            maxLines: 1000
+
+alertmanager:
+  enabled: false
+
+# Disable default alert rules to clean up UI
+defaultRules:
+  create: false
+  rules:
+    alertmanager: false
+    etcd: false
+    configReloaders: false
+    general: false
+    k8s: false
+    kubeApiserver: false
+    kubeApiserverAvailability: false
+    kubeApiserverSlos: false
+    kubePrometheusGeneral: false
+    kubePrometheusNodeRecording: false
+    kubernetesAbsent: false
+    kubernetesApps: false
+    kubernetesResources: false
+    kubernetesStorage: false
+    kubernetesSystem: false
+    kubeScheduler: false
+    kubeStateMetrics: false
+    network: false
+    node: false
+    nodeExporterAlerting: false
+    nodeExporterRecording: false
+    prometheus: false
+    prometheusOperator: false
+
+nodeExporter:
+  enabled: false
+
+prometheus-node-exporter:
+  enabled: false

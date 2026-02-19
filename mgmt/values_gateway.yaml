@@ -1,0 +1,49 @@
+loki:
+  gateway:
+    enabled: true
+    replicas: 1
+    verboseLogging: true
+
+    autoscaling:
+      enabled: false                     # POC: false (Production: true)
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 60
+
+    # Production service:
+    # service:
+    #   type: NodePort
+    #   port: 80
+    #   targetPort: 80
+
+    service:
+      type: ClusterIP                    # POC: ClusterIP (Production: LoadBalancer/NodePort)
+      port: 3100
+      targetPort: 8080
+
+    # Production resources:
+    # resources:
+    #   requests:
+    #     cpu: 50m
+    #     memory: 64Mi
+    #   limits:
+    #     cpu: 200m
+    #     memory: 256Mi
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+
+    basicAuth:
+      enabled: false
+      username: admin
+      password: ilovecheq
+
+    nodeSelector: { }
+    tolerations: [ ]
+    affinity: { }

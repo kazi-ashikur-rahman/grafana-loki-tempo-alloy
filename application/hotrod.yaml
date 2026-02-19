@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hotrod
+  namespace: application
+  labels:
+    app: hotrod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hotrod
+  template:
+    metadata:
+      labels:
+        app: hotrod
+    spec:
+      containers:
+        - name: hotrod
+          image: jaegertracing/example-hotrod:latest
+          args:
+            - all
+          env:
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://alloy.observability.svc.cluster.local:4318"
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hotrod
+  namespace: application
+  labels:
+    app: hotrod
+spec:
+  selector:
+    app: hotrod
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

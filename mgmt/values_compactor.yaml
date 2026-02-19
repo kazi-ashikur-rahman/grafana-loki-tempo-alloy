@@ -1,0 +1,42 @@
+loki:
+  compactor:
+    replicas: 1
+    terminationGracePeriodSeconds: 60
+
+    # Production persistence:
+    # persistence:
+    #   enabled: true
+    #   storageClass: gp2
+    #   claims:
+    #     - name: data
+    #       size: 50Gi
+    #       storageClass: gp2
+    #       accessModes:
+    #         - ReadWriteOnce
+
+    persistence:
+      enabled: true
+      storageClass: local-path
+      claims:
+        - name: data
+          size: 2Gi                      # POC: 2Gi (Production: 50Gi)
+          storageClass: local-path
+          accessModes:
+            - ReadWriteOnce
+
+    # Production resources:
+    # resources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 256Mi
+    #   limits:
+    #     cpu: 500m
+    #     memory: 1Gi
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi

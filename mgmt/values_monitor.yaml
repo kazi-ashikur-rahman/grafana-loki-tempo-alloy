@@ -1,0 +1,27 @@
+loki:
+  monitoring:
+    dashboards:
+      enabled: true  # Auto-creates 10 default dashboards as ConfigMaps
+      namespace: null  # Deploy in same namespace as Loki (loki)
+      labels:
+        grafana_dashboard: "1"  # Label for Grafana sidecar auto-discovery
+      annotations: {}
+    
+    # Recording rules (pre-compute expensive queries)
+    rules:
+      enabled: true 
+
+    alerts:
+      enabled: true 
+
+    # ServiceMonitor for Prometheus Operator
+    serviceMonitor:
+      enabled: true  # Creates ServiceMonitor CRDs for Prometheus scraping
+      labels: { }
+      annotations: { }
+      interval: 15s  # Scrape interval
+
+    prometheusRule:
+      enabled: true
+      labels: { }
+      annotations: { }

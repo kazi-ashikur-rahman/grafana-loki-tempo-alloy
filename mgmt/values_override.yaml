@@ -1,0 +1,28 @@
+# Override values for Chart.yaml dependency only
+# This file bridges the gap between production values and Chart.yaml requirements
+# From deploy-all.sh:
+# sed -i.bak "s|endpoint: http://172.21.0.2:9000|g" values_override.yaml
+
+loki:
+  storage:
+    type: s3
+    bucketNames:
+      chunks: loki-poc
+      ruler: loki-poc
+      admin: loki-poc
+    s3:
+      endpoint: http://172.21.0.2:9000
+      region: us-east-1
+      secretAccessKey: minioadmin123
+      accessKeyId: minioadmin
+      s3ForcePathStyle: true
+      insecure: true
+  schemaConfig:
+    configs:
+      - from: "2026-01-01"
+        store: tsdb
+        object_store: s3
+        schema: v13
+        index:
+          prefix: loki_tsdb_index_
+          period: 24h

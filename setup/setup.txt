@@ -1,0 +1,82 @@
+### Step 1: Create k3d cluster
+
+k3d cluster create --config setup/k3d-cluster.yaml
+kubectl get nodes
+
+### Step 2: Create namespaces
+kubectl create namespace observability
+kubectl create namespace application  
+kubectl create namespace loki
+
+### Step 3: Add Helm repos
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+### Step 4: Deploy MinIO for Loki storage
+# Start MinIO container on k3d network
+docker run -d --name minio --network k3d-tempo-poc \
+  -p 9000:9000 -p 9001:9001 \
+  -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin123 \
+  minio/minio server /data --console-address ":9001"
+
+# Setup MinIO bucket  
+docker exec minio mc alias set local http://localhost:9000 minioadmin minioadmin123
+docker exec minio mc mb local/loki-poc
+
+# Update Loki config with correct MinIO IP
+MINIO_IP=$(docker inspect minio | grep -A 20 'k3d-tempo-poc' | grep IPAddress | cut -d'"' -f4)
+echo "MinIO IP: $MINIO_IP"
+sed -i.bak "s|endpoint: http://.*:9000|endpoint: http://$MINIO_IP:9000|g" mgmt/values_override.yaml
+
+### Step 5: Deploy Loki (Distributed)
+cd mgmt && helm dependency build
+helm install loki . --namespace loki \
+  -f values_loki.yaml -f values_ingester.yaml -f values_distributor.yaml \
+  -f values_querier.yaml -f values_queryFrontend.yaml -f values_queryScheduler.yaml \
+  -f values_compactor.yaml -f values_indexGateway.yaml -f values_gateway.yaml \
+  -f values_memcached.yaml -f values_monitor.yaml -f values_sa.yaml \
+  -f values_ingress.yaml -f values_override.yaml --wait
+cd ..
+
+### Step 6: Deploy Prometheus + Grafana
+# Install with corrected Tempo datasource URL (:3200, not :3100)
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace observability --values helm/prometheus-stack-values.yaml --wait
+
+### Step 7: Deploy Tempo  
+helm install tempo grafana/tempo \
+  --namespace observability --values helm/tempo-values.yaml --wait
+
+### Step 8: Deploy Alloy
+# Fixed: Properly configured DaemonSet with controller under alloy section
+helm install alloy grafana/alloy \
+  --namespace observability --values helm/alloy-values.yaml --wait
+
+### Step 9: Deploy HotROD
+# Fixed: Uses HTTP port 4318 for OTLP (not gRPC 4317)
+kubectl apply -f application/hotrod.yaml
+
+### Step 10: Access UIs
+
+kubectl port-forward svc/monitoring-grafana 3000:80 -n observability &
+kubectl port-forward svc/hotrod 8081:8080 -n application &
+kubectl port-forward svc/loki-gateway 3100:3100 -n loki &
+kubectl port-forward -n observability tempo-0 3200:3200 &
+
+### Step 11: Test & Validate
+
+# Generate traces
+curl http://localhost:8081
+
+# Check traces in Tempo (should show results)
+curl -s "http://localhost:3200/api/search?start=$(echo $(($(date +%s)-300)))&end=$(echo $(date +%s))" | jq .
+
+# Access Grafana
+open http://localhost:3000 (admin/admin123)
+
+# Test areas:
+# 1. Explore -> Tempo -> Search -> Run Query (should show traces)
+# 2. Explore -> Loki -> {namespace="application"} (should show logs)  
+# 3. Explore -> Prometheus -> traces_spanmetrics_latency_bucket (should show derived metrics)
+

@@ -1,0 +1,37 @@
+loki:
+  distributor:
+    replicas: 1                          # POC: 1 (Production: 2+)
+    maxUnavailable: 1
+    terminationGracePeriodSeconds: 60
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 60
+
+    # Production resources:
+    # resources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   limits:
+    #     cpu: 500m
+    #     memory: 512Mi
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+    nodeSelector: { }
+    tolerations: [ ]
+    affinity: { }
+
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "3100"

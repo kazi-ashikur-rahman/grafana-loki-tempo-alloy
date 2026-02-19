@@ -1,0 +1,7 @@
+loki:
+  serviceAccount:
+    create: true
+    name: loki
+    # annotations:
+    #   eks.amazonaws.com/role-arn: arn:aws:iam::527976876550:role/mgmt-cheq-loki
+    automountServiceAccountToken: true

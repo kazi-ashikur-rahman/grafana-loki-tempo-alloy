@@ -1,0 +1,27 @@
+# Tempo Single Binary Mode (grafana/tempo)
+# Chart enables OTLP receivers (gRPC:4317, HTTP:4318) by default
+
+tempo:
+  # Metrics generator - derives RED metrics (Rate/Errors/Duration) from traces
+  metricsGenerator:
+    enabled: true
+    remoteWriteUrl: "http://monitoring-kube-prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write"
+
+  # Enable service graphs and span metrics processors
+  overrides:
+    defaults:
+      metrics_generator:
+        processors: [service-graphs, span-metrics, local-blocks]
+
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClassName: local-path
+
+# ── Distributed Mode (Production): Use grafana/tempo-distributed chart ──
+# When moving to production, switch to grafana/tempo-distributed for:
+#   - Separate distributor, ingester, querier, compactor, metrics-generator
+#   - S3/GCS object storage backend
+#   - Independent scaling per component
+#   - High availability with 3+ replicas
+# See tempo-distributed-values.yaml.example for reference config

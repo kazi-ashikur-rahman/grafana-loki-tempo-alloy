@@ -1,0 +1,28 @@
+loki:
+  memcached:
+    enabled: false
+
+  memcachedExporter:
+    enabled: false
+
+  chunksCache:
+    enabled: false
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+  resultsCache:
+    enabled: false
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi

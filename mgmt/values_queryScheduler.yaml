@@ -1,0 +1,32 @@
+loki:
+  queryScheduler:
+    replicas: 1
+    terminationGracePeriodSeconds: 30
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 60
+
+    # Production resources:
+    # resources:
+    #   requests:
+    #     cpu: 50m
+    #     memory: 64Mi
+    #   limits:
+    #     cpu: 200m
+    #     memory: 256Mi
+
+    resources:
+      requests:
+        cpu: 25m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
