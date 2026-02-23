@@ -53,6 +53,10 @@ grafana:
           access: proxy
           jsonData:
             httpMethod: GET
+            serviceMap:
+              datasourceUid: prometheus
+            nodeGraph:
+              enabled: true
 
         - name: Loki
           type: loki
@@ -62,7 +66,7 @@ grafana:
           jsonData:
             derivedFields:
               - datasourceUid: tempo
-                matcherRegex: "(?:traceID|trace_id|TraceId|traceid)[=: ]+(\\w+)"
+                matcherRegex: "\"trace_id\":\\s*\"([a-fA-F0-9]+)\""
                 name: TraceID
                 url: "$${__value.raw}"
             maxLines: 1000
