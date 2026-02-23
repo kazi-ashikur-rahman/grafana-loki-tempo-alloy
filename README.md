@@ -148,12 +148,6 @@ Result: Only Tempo logs collected. HotROD and Grafana logs are LOST.
 
 ## Prerequisites
 
-> **⚠️ Important Configuration Notes:**  
-> - **HotROD uses OTLP HTTP** (port 4318), not gRPC, to avoid protocol mismatch errors
-> - **Tempo API is on port 3200**, not 3100 (Grafana datasource configuration)  
-> - **Alloy DaemonSet** ensures log collection from all nodes
-> - All fixes have been applied to the configuration files in this repository
-
 - **k3d** >= v5.x
 - **Helm** >= v3.x
 - **kubectl** configured
