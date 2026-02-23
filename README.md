@@ -152,11 +152,6 @@ Result: Only Tempo logs collected. HotROD and Grafana logs are LOST.
 - **Helm** >= v3.x
 - **kubectl** configured
 
-## Quick Setup
-
-```bash
-./setup/setup.sh
-```
 
 ## Manual Setup
 
